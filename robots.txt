@@ -3,4 +3,4 @@ Allow: /
 Disallow: /src/
 Disallow: /apps-script/
 
-Sitemap: https://yash11255.github.io/orvys/sitemap.xml
+Sitemap: https://yash11255.github.io/orvys./sitemap.xml
