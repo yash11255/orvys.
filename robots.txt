@@ -3,4 +3,4 @@ Allow: /
 Disallow: /src/
 Disallow: /apps-script/
 
-Sitemap: https://orvys-nu.vercel.app/sitemap.xml
+Sitemap: https://www.orvys.in/sitemap.xml

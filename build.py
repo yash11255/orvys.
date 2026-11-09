@@ -14,9 +14,9 @@ Run:  python3 build.py
 """
 import pathlib, re, json, html, datetime, os
 
-# Live address (Vercel, served from the domain root).
+# Live address: www.orvys.in on Vercel (served from the domain root).
 # For your own domain: SITE_URL="https://www.orvys.in" python3 build.py
-SITE_URL = os.environ.get("SITE_URL", "https://orvys-nu.vercel.app").rstrip("/")
+SITE_URL = os.environ.get("SITE_URL", "https://www.orvys.in").rstrip("/")
 BASE_PATH = os.environ.get("BASE_PATH", "").rstrip("/")
 ROOT = pathlib.Path(__file__).parent
 LAYOUT = (ROOT / "src" / "_layout.html").read_text(encoding="utf-8")
