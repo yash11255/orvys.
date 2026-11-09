@@ -14,10 +14,10 @@ Run:  python3 build.py
 """
 import pathlib, re, json, html, datetime, os
 
-# Live address. On GitHub Pages without a custom domain the site lives under /orvys.
-# With your own domain: SITE_URL="https://www.orvys.in" BASE_PATH="" python3 build.py
-SITE_URL = os.environ.get("SITE_URL", "https://yash11255.github.io/orvys.").rstrip("/")
-BASE_PATH = os.environ.get("BASE_PATH", "/orvys.").rstrip("/")
+# Live address (Vercel, served from the domain root).
+# For your own domain: SITE_URL="https://www.orvys.in" python3 build.py
+SITE_URL = os.environ.get("SITE_URL", "https://orvys-nu.vercel.app").rstrip("/")
+BASE_PATH = os.environ.get("BASE_PATH", "").rstrip("/")
 ROOT = pathlib.Path(__file__).parent
 LAYOUT = (ROOT / "src" / "_layout.html").read_text(encoding="utf-8")
 TODAY = datetime.date.today().isoformat()
