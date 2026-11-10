@@ -413,14 +413,24 @@ h1 em,h2 em,.hero h1 em{font-style:normal;color:var(--gold2)}
 .site-foot .bottom a{color:#9ea9b7;border-bottom:1px solid rgba(255,255,255,.2)}
 .site-foot .bottom a:hover{color:#fff}
 
-/* ---- LinkedIn embed ---- */
-.li-embed{background:#fff;border-radius:10px;box-shadow:0 24px 50px rgba(14,26,41,.12);overflow:hidden;max-width:540px;width:100%;justify-self:center}
+/* ---- LinkedIn embed & carousel ---- */
+.li-embed,.li-carousel-wrap{background:#fff;border-radius:10px;box-shadow:0 24px 50px rgba(14,26,41,.12);overflow:hidden;max-width:540px;width:100%;justify-self:center;position:relative}
 .li-embed iframe{display:block;width:100%;height:880px;border:0}
+.li-carousel{position:relative;width:100%;height:880px;overflow:hidden;background:#fbfaf7}
+.li-slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s ease;width:100%;height:100%}
+.li-slide.on{opacity:1;visibility:visible;position:relative}
+.li-slide iframe{display:block;width:100%;height:880px;border:0}
+.li-nav{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:#fff;border-top:1px solid var(--line)}
+.li-btn{background:var(--sand);border:1px solid var(--line);color:var(--navy);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s ease}
+.li-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.li-dots{display:flex;gap:8px;align-items:center}
+.li-dot{width:10px;height:10px;border-radius:50%;border:0;background:#d6d2c9;cursor:pointer;padding:0;transition:.25s ease}
+.li-dot.on{background:var(--gold);transform:scale(1.25)}
 .site-foot .social{display:inline-flex;align-items:center;gap:10px;margin-top:18px;color:#c7cfd9;font-size:14.5px}
 .site-foot .social:hover{color:#fff}
 .site-foot .social svg{color:var(--gold2)}
-@media(max-width:1000px){#linkedin .li-embed{order:0}}
-@media(max-width:640px){.li-embed iframe{height:760px}}
+@media(max-width:1000px){#linkedin .li-embed,#linkedin .li-carousel-wrap{order:0}}
+@media(max-width:640px){.li-embed iframe,.li-carousel,.li-slide iframe{height:760px}}
 
 
 /* ---- Research & Spotlight Styles ---- */

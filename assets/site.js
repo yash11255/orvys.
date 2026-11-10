@@ -96,4 +96,23 @@
       document.querySelectorAll('.post-card[data-cat]').forEach(function (a) { a.style.display = (c === 'all' || a.dataset.cat === c) ? '' : 'none'; });
     });
   });
+
+  // LinkedIn Carousel
+  document.querySelectorAll('.li-carousel-wrap').forEach(function (wrap) {
+    var slides = wrap.querySelectorAll('.li-slide');
+    var dots = wrap.querySelectorAll('.li-dot');
+    var prev = wrap.querySelector('.li-btn.prev');
+    var next = wrap.querySelector('.li-btn.next');
+    var cur = 0;
+    function show(idx) {
+      cur = (idx + slides.length) % slides.length;
+      slides.forEach(function (s, i) { s.classList.toggle('on', i === cur); });
+      dots.forEach(function (d, i) { d.classList.toggle('on', i === cur); });
+    }
+    if (prev) prev.addEventListener('click', function () { show(cur - 1); });
+    if (next) next.addEventListener('click', function () { show(cur + 1); });
+    dots.forEach(function (d, i) {
+      d.addEventListener('click', function () { show(i); });
+    });
+  });
 })();
