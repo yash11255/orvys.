@@ -66,9 +66,24 @@ def rebase(text):
     return re.sub(r"(url\(')/(?!/)", r"\1" + BASE_PATH + "/", text)
 
 
+import hashlib
+
+def _ver(name):
+    data = (ROOT / "assets" / name).read_bytes()
+    return hashlib.sha256(data).hexdigest()[:10]
+
+# Long-cached CSS/JS get a content hash so every change reaches visitors immediately.
+VERSIONED = {n: _ver(n) for n in ("site.css", "site.js", "early.js", "config.js")}
+
+def version_assets(text):
+    for n, h in VERSIONED.items():
+        text = text.replace(f'/assets/{n}"', f'/assets/{n}?v={h}"')
+    return text
+
+
 def write(rel, text):
     if rel.endswith(".html"):
-        text = rebase(text)
+        text = rebase(version_assets(text))
     p = ROOT / rel
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(text, encoding="utf-8")
