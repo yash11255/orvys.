@@ -161,8 +161,7 @@ blog = f'''<section class="post-head" style="padding-bottom:40px">
     <div class="filters">{chips}</div>
   </div>
 </section>
-<section style="padding-top:20px"><div class="wrap"><div class="post-grid-list">{cards}</div></div></section>
-<script>document.querySelectorAll('.filters .chip').forEach(function(b){{b.addEventListener('click',function(){{document.querySelectorAll('.filters .chip').forEach(function(x){{x.classList.remove('on')}});b.classList.add('on');var c=b.dataset.cat;document.querySelectorAll('.post-card[data-cat]').forEach(function(a){{a.style.display=(c==='all'||a.dataset.cat===c)?'':'none'}})}})}});</script>'''
+<section style="padding-top:20px"><div class="wrap"><div class="post-grid-list">{cards}</div></div></section>'''
 ld = {"@context": "https://schema.org", "@type": "Blog", "name": "Orvys Blog", "url": f"{SITE_URL}/blog/",
       "blogPost": [{"@type": "BlogPosting", "headline": p["title"], "url": f"{SITE_URL}/blog/{p['slug']}.html", "datePublished": p["date"]} for p in posts]}
 write("blog/index.html", render(blog, title="Blog | CSR in India: Guides, Data and Ideas | Orvys",

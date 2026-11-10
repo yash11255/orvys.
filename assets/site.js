@@ -86,4 +86,14 @@
         .finally(function () { btn.disabled = false; btn.textContent = label; });
     });
   });
+
+  // Blog category filter
+  document.querySelectorAll('.filters .chip').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.filters .chip').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      var c = b.dataset.cat;
+      document.querySelectorAll('.post-card[data-cat]').forEach(function (a) { a.style.display = (c === 'all' || a.dataset.cat === c) ? '' : 'none'; });
+    });
+  });
 })();

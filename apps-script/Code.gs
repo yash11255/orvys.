@@ -5,6 +5,8 @@
  * Tabs and header columns are created automatically.
  *
  * Setup: see SETUP.md in the website folder.
+ * Security: honeypot spam trap, input validation, per-sender and global rate
+ * limits, and protection against spreadsheet formula injection.
  */
 
 // Optional: an email address to notify on every new submission (leave "" to disable).
@@ -22,6 +24,20 @@ function doPost(e) {
 
     // Basic spam guard: ignore if the hidden honeypot field was filled.
     if (p.website) return json_({ ok: true });
+
+    // Validation: reject obviously bad submissions.
+    if (p.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(p.email)) return json_({ ok: false, error: "invalid email" });
+    if (formType !== "Newsletter" && !String(p.name || "").trim()) return json_({ ok: false, error: "name required" });
+    if (Object.keys(p).length > 25) return json_({ ok: false, error: "too many fields" });
+
+    // Rate limiting: max 5 submissions per sender per hour, 300 per hour overall.
+    var cache = CacheService.getScriptCache();
+    var who = String(p.email || p.phone || p.name || "anon").toLowerCase().slice(0, 100);
+    var key = "rl_" + Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, who)).slice(0, 40);
+    var n = Number(cache.get(key) || 0), all = Number(cache.get("rl_all") || 0);
+    if (n >= 5 || all >= 300) return json_({ ok: false, error: "rate limited" });
+    cache.put(key, String(n + 1), 3600);
+    cache.put("rl_all", String(all + 1), 3600);
 
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName(formType) || ss.insertSheet(formType);
