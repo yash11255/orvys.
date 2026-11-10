@@ -19,7 +19,7 @@ python3 build.py
 
 ## Connect the forms to Google Sheets (about 5 minutes)
 
-All four forms (Enquiries, Partnerships, Report Downloads, Newsletter) save to one Google Sheet. Each form gets its own tab.
+All forms (Enquiries, Partnerships, Report Downloads, Newsletter, Research Registry, NGO Suggestions) save to one Google Sheet. Each form gets its own tab.
 
 1. Create a new Google Sheet, for example "Orvys Website Leads".
 2. In the Sheet, open **Extensions → Apps Script**.

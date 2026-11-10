@@ -421,3 +421,94 @@ h1 em,h2 em,.hero h1 em{font-style:normal;color:var(--gold2)}
 .site-foot .social svg{color:var(--gold2)}
 @media(max-width:1000px){#linkedin .li-embed{order:0}}
 @media(max-width:640px){.li-embed iframe{height:760px}}
+
+
+/* ---- Research & Spotlight Styles ---- */
+.orvys-spotlight{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;padding:90px 0;border-top:1px solid rgba(255,255,255,.1);border-bottom:1px solid rgba(255,255,255,.1)}
+.spotlight-inner{display:grid;grid-template-columns:1.2fr .8fr;gap:64px;align-items:center}
+.spotlight-inner h2{color:#fff}
+.spotlight-stats{display:grid;grid-template-columns:1fr 1fr;gap:24px 32px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);padding:36px 32px;border-radius:4px}
+.spotlight-stats b{display:block;font-family:var(--serif);font-size:clamp(34px,3.8vw,48px);color:var(--gold2);font-weight:700;line-height:1}
+.spotlight-stats span{display:block;font-size:14px;color:#aeb8c5;margin-top:8px}
+
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
+.res-card{background:#fff;border:1px solid var(--line);border-radius:4px;padding:32px 28px;display:flex;flex-direction:column;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.res-card:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(14,26,41,.08);border-color:var(--gold)}
+.res-icon{font-size:32px;margin-bottom:18px;display:block}
+.res-card h3{font-size:21px;margin:0 0 10px;color:var(--navy)}
+.res-card p{font-size:15px;color:var(--mute);margin:0 0 20px;flex:1;line-height:1.6}
+
+.dist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.dist-mini{background:#fff;border:1px solid var(--line);border-radius:4px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;transition:.2s ease;position:relative}
+.dist-mini:hover{border-color:var(--gold);background:var(--sand);transform:translateY(-2px)}
+.dist-mini strong{font-size:15px;color:var(--navy)}
+.dist-mini span{font-size:13px;color:var(--gold);font-weight:600;display:flex;align-items:baseline;gap:6px}
+.dist-mini small{font-size:11px;color:var(--mute);font-weight:400;text-transform:uppercase}
+.tag-asp{display:inline-block;background:rgba(168,134,79,.14);color:var(--gold);font-size:11px;padding:2px 7px;border-radius:999px;font-weight:600;vertical-align:middle;margin-left:6px}
+.tag-flood{display:inline-block;background:rgba(36,57,90,.12);color:var(--navy3);font-size:11px;padding:2px 7px;border-radius:999px;font-weight:600;vertical-align:middle;margin-left:6px}
+
+.init-list{display:grid;gap:24px}
+.init-card{background:#fff;border:1px solid var(--line);border-radius:4px;padding:28px 30px;box-shadow:0 6px 18px rgba(14,26,41,.03)}
+.init-meta{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.init-when{font-size:13px;color:var(--mute)}
+.orvys-view{margin-top:16px;padding:14px 18px;background:var(--sand);border-left:3px solid var(--gold);font-size:14.5px;color:var(--navy);border-radius:0 4px 4px 0}
+
+.eco-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px}
+.eco-card{background:#fff;border:1px solid var(--line);border-radius:4px;padding:26px 24px;display:flex;flex-direction:column}
+.eco-top{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.eco-top strong{font-size:17px;color:var(--navy)}
+
+.chart-wrap{background:#fff;border:1px solid var(--line);border-radius:4px;padding:28px 24px;overflow-x:auto;box-shadow:0 8px 24px rgba(14,26,41,.03)}
+.sources{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);font-size:13.5px;color:var(--mute)}
+.sources ol{padding-left:20px;margin:10px 0 0}
+.sources li{margin-bottom:6px}
+.srclink{color:var(--navy);border-bottom:1px solid var(--line)}
+.srclink:hover{color:var(--gold)}
+
+.print-btn{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+
+@media(max-width:900px){.spotlight-inner{grid-template-columns:1fr;gap:40px}}
+@media(max-width:600px){.spotlight-stats{grid-template-columns:1fr 1fr;padding:24px}}
+
+/* ---- PDF Watermark & Print Styles ---- */
+@media print {
+  .site-head, .site-foot, .print-btn, .btn-dl-wm, #loader, .menu-cta, .cta, .filters, .crumbs, .cta-band, .burger {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+    color: #0e1a29 !important;
+  }
+  body::before {
+    content: "ORVYS RESEARCH · www.orvys.in · For personal use only";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-35deg);
+    font-size: 44px;
+    font-weight: 800;
+    color: rgba(14, 26, 41, 0.08);
+    white-space: nowrap;
+    z-index: 999999;
+    pointer-events: none;
+    font-family: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "DM Sans", sans-serif;
+  }
+  .wrap {
+    max-width: 100% !important;
+    padding: 0 16px !important;
+  }
+  .post-head {
+    padding-top: 24px !important;
+    padding-bottom: 20px !important;
+  }
+  .chart-wrap {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    page-break-inside: avoid;
+  }
+  .formcard, .init-card, .eco-card, .res-card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    page-break-inside: avoid;
+  }
+}

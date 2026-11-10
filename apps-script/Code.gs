@@ -14,7 +14,7 @@
 var NOTIFY_EMAIL = "";
 
 // Only these tab names are accepted (prevents arbitrary sheet creation).
-var ALLOWED_FORMS = ["Enquiries", "Partnerships", "Report Downloads", "Newsletter"];
+var ALLOWED_FORMS = ["Enquiries", "Partnerships", "Report Downloads", "Newsletter", "Research Registry", "NGO Suggestions"];
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
