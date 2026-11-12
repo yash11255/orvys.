@@ -1,2 +1,4 @@
 .DS_Store
 __pycache__/
+research_src/.venv/
+research_src/stamp.pdf

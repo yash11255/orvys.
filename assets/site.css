@@ -1,7 +1,9 @@
+/* ₹ glyph from a system font that has it (web fonts render it poorly) */
+@font-face{font-family:"Rupee";src:local("Helvetica Neue"),local("HelveticaNeue"),local("Segoe UI"),local("Roboto"),local("Arial");unicode-range:U+20B9}
 /* Orvys — design system */
 :root{
   --navy:#0e1a29; --navy2:#16263b; --navy3:#24395a; --gold:#a8864f; --gold2:#c9a96e; --sand:#f7f3ec; --paper:#fbfaf7;
-  --ink:#1d2632; --mute:#5f6b7a; --line:#e4e1da; --serif:'Plus Jakarta Sans',system-ui,sans-serif; --sans:'DM Sans',system-ui,sans-serif;
+  --ink:#1d2632; --mute:#5f6b7a; --line:#e4e1da; --serif:'Rupee','Plus Jakarta Sans',system-ui,sans-serif; --sans:'Rupee','DM Sans',system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -480,45 +482,398 @@ h1 em,h2 em,.hero h1 em{font-style:normal;color:var(--gold2)}
 @media(max-width:900px){.spotlight-inner{grid-template-columns:1fr;gap:40px}}
 @media(max-width:600px){.spotlight-stats{grid-template-columns:1fr 1fr;padding:24px}}
 
-/* ---- PDF Watermark & Print Styles ---- */
+/* Screen default: print-only elements hidden */
+.print-outlook-header, .print-advisory-box {
+  display: none;
+}
+
+/* ---- PDF Outlook Report & Print Styles ---- */
 @media print {
-  .site-head, .site-foot, .print-btn, .btn-dl-wm, #loader, .menu-cta, .cta, .filters, .crumbs, .cta-band, .burger {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 14mm 12mm 14mm;
+  }
+  
+  *, *:before, *:after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .site-head, .site-foot, .print-btn, .btn-dl-wm, #loader, .menu-cta, .cta, .filters, .crumbs, .cta-band, .burger, .no-print, .adjacent-districts {
     display: none !important;
   }
+  
+  .hero.page-hero {
+    display: none !important;
+  }
+  
+  .print-outlook-header {
+    display: block !important;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--navy);
+    padding-bottom: 14px;
+    page-break-inside: avoid;
+  }
+  
+  .poh-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1.5px solid var(--gold);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .poh-brand {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  
+  .poh-logo {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.05em;
+  }
+  
+  .poh-tagline {
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--gold);
+  }
+  
+  .poh-meta {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--mute);
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .poh-titlebox {
+    margin-top: 6px;
+  }
+  
+  .poh-eyebrow {
+    display: inline-block;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--gold);
+    background: #fbf7f0;
+    border: 1px solid rgba(163, 131, 73, 0.3);
+    border-radius: 4px;
+    padding: 3px 8px;
+    margin-bottom: 6px;
+  }
+  
+  .poh-title {
+    font-family: var(--serif);
+    font-size: 26px;
+    line-height: 1.15;
+    color: var(--navy);
+    margin: 4px 0 6px;
+  }
+  
+  .poh-sub {
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: #475569;
+    margin: 0 0 12px;
+  }
+  
+  .poh-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 10.5px;
+    color: #334155;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 7px 12px;
+  }
+  
+  .poh-pills span b {
+    color: var(--navy);
+  }
+  
   body {
     background: #fff !important;
     color: #0e1a29 !important;
+    font-size: 12px !important;
+    line-height: 1.45 !important;
   }
-  body::before {
-    content: "ORVYS RESEARCH · www.orvys.in · For personal use only";
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-35deg);
-    font-size: 44px;
-    font-weight: 800;
-    color: rgba(14, 26, 41, 0.08);
-    white-space: nowrap;
-    z-index: 999999;
-    pointer-events: none;
-    font-family: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "DM Sans", sans-serif;
-  }
+  
+  /* Watermark is stamped into every PDF page by research_src/secure_pdfs.py */
+  
   .wrap {
     max-width: 100% !important;
-    padding: 0 16px !important;
+    padding: 0 !important;
   }
-  .post-head {
-    padding-top: 24px !important;
-    padding-bottom: 20px !important;
+  
+  section {
+    padding: 12px 0 !important;
   }
+  
+  .sec-sm {
+    padding: 10px 0 !important;
+  }
+  
+  /* Stats row in print */
+  .dark.sec-sm {
+    background: #0e1a29 !important;
+    color: #fff !important;
+    border-radius: 5px;
+    padding: 12px 16px !important;
+    margin-bottom: 16px;
+    page-break-inside: avoid;
+  }
+  
+  .dark.sec-sm .stats {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 14px !important;
+  }
+  
+  .dark.sec-sm .stats div {
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    padding-right: 10px;
+  }
+  
+  .dark.sec-sm .stats div:last-child {
+    border-right: none;
+  }
+  
+  .dark.sec-sm .stats b {
+    display: block;
+    font-size: 22px !important;
+    color: #f6e0b5 !important;
+    font-family: var(--serif);
+    line-height: 1.1;
+  }
+  
+  .dark.sec-sm .stats span {
+    display: block;
+    font-size: 9.5px !important;
+    color: #cbd5e1 !important;
+    margin-top: 3px;
+    line-height: 1.25;
+  }
+  
+  /* Layout split */
+  .split {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 20px !important;
+    align-items: start !important;
+  }
+  
+  .split.r {
+    grid-template-columns: 1.2fr 0.8fr !important;
+  }
+  
+  .figure img {
+    max-height: 200px !important;
+    object-fit: cover !important;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    width: 100%;
+  }
+  
+  .figure .tag {
+    position: static !important;
+    margin-top: 6px !important;
+    padding: 6px 10px !important;
+    background: #0e1a29 !important;
+    color: #fff !important;
+    border-radius: 4px;
+  }
+  
+  .figure .tag b {
+    font-size: 19px !important;
+    color: #f6e0b5 !important;
+  }
+  
+  .figure .tag span {
+    font-size: 9.5px !important;
+  }
+  
+  .figure figcaption {
+    font-size: 9.5px !important;
+    color: #64748b !important;
+    margin-top: 4px;
+  }
+  
+  /* Priority Interventions in Print */
+  .sand {
+    background: #fbf7f0 !important;
+    border: 1px solid rgba(163, 131, 73, 0.25);
+    border-radius: 5px;
+    padding: 14px 16px !important;
+    margin: 14px 0 !important;
+    page-break-inside: avoid;
+  }
+  
+  .pillars {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+  
+  .pillar {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 10px 12px;
+    page-break-inside: avoid;
+  }
+  
+  .pillar .n {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  
+  .pillar h3 {
+    font-size: 13px !important;
+    margin: 3px 0 5px !important;
+    color: var(--navy);
+  }
+  
+  .pillar p {
+    font-size: 10.5px !important;
+    line-height: 1.4 !important;
+    color: #475569 !important;
+  }
+  
+  /* Factsheet & Table */
+  .formcard {
+    background: #fff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px;
+    padding: 12px !important;
+    page-break-inside: avoid;
+    box-shadow: none !important;
+  }
+  
+  table {
+    font-size: 11px !important;
+  }
+  
+  table td, table th {
+    padding: 5px 6px !important;
+  }
+  
   .chart-wrap {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px;
+    padding: 10px !important;
+    page-break-inside: avoid;
     box-shadow: none !important;
-    border: 1px solid #ccc !important;
+  }
+  
+  /* Active Programmes in Print */
+  .init-card {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px;
+    padding: 8px 12px !important;
+    margin-bottom: 8px !important;
+    page-break-inside: avoid;
+    box-shadow: none !important;
+  }
+  
+  .init-card h3 {
+    font-size: 12.5px !important;
+    margin: 3px 0 !important;
+  }
+  
+  .init-card p {
+    font-size: 10.5px !important;
+    line-height: 1.35 !important;
+    margin-top: 3px !important;
+  }
+  
+  /* Print Advisory Sign-off */
+  .print-advisory-box {
+    display: block !important;
+    margin-top: 16px;
+    border: 1.5px solid var(--navy);
+    border-radius: 4px;
+    padding: 12px 16px;
+    background: #f8fafc;
     page-break-inside: avoid;
   }
-  .formcard, .init-card, .eco-card, .res-card {
-    box-shadow: none !important;
-    border: 1px solid #ddd !important;
-    page-break-inside: avoid;
+  
+  .pab-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 5px;
+    margin-bottom: 6px;
+  }
+  
+  .pab-title {
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  
+  .pab-contact {
+    font-size: 10.5px;
+    color: var(--gold);
+    font-weight: 600;
+  }
+  
+  .pab-desc {
+    font-size: 10.5px;
+    line-height: 1.45;
+    color: #334155;
+    margin: 0;
   }
 }
+
+/* ---- report-quality print layout ---- */
+@media print {
+  figure, .exhibit, svg, .chart, .res-card, .dist-card, .kpis-row, .stat, tr, .org, .box, .opp, .tr { break-inside: avoid; page-break-inside: avoid; }
+  h2, h3 { break-after: avoid; page-break-after: avoid; }
+  img { max-height: 120mm; object-fit: cover; }
+  .pdf-cover { display: flex !important; }
+}
+.pdf-cover { display: none; }
+
+/* ---- district cards ---- */
+.dist-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
+.dist-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 1px 2px rgba(14,26,41,.04);transition:transform .25s,box-shadow .25s,border-color .25s}
+.dist-card:hover{transform:translateY(-4px);box-shadow:0 18px 36px rgba(14,26,41,.12);border-color:#d8cdb8}
+.dist-card-img{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--navy2)}
+.dist-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.dist-card:hover .dist-card-img img{transform:scale(1.06)}
+.dist-card-over{position:absolute;inset:auto 0 0 0;padding:34px 14px 12px;background:linear-gradient(180deg,transparent,rgba(14,26,41,.88));color:#fff}
+.dist-card-over strong{display:block;font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+.dist-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;min-height:0}
+.dist-tags span{font-size:10.5px;font-weight:600;letter-spacing:.03em;padding:2px 8px;border-radius:99px;background:rgba(201,169,110,.95);color:#0e1a29}
+.dist-tags .tag-flood{background:rgba(255,255,255,.9)}
+.dist-card-body{padding:14px 14px 13px;display:flex;flex-direction:column;gap:11px;flex:1}
+.dist-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dist-stats b{display:block;font-family:var(--serif);font-size:17px;font-weight:700;color:var(--navy);line-height:1.2}
+.dist-stats span{font-size:11.5px;color:var(--mute)}
+.dist-rank-bar{height:5px;background:#eee9df;border-radius:9px;overflow:hidden}
+.dist-rank-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:9px}
+.dist-rank span{display:block;font-size:11px;color:var(--mute);margin-top:5px}
+.dist-more{margin-top:auto;font-size:12.5px;font-weight:600;color:var(--gold)}
+@media(max-width:640px){.dist-grid{grid-template-columns:1fr 1fr;gap:12px}.dist-card-over strong{font-size:16px}.dist-stats b{font-size:15px}.dist-card-body{padding:11px}}

@@ -106,8 +106,6 @@ for page in sorted((ROOT / "src" / "pages").rglob("*.html")):
     out_rel = str(rel)
     nav = meta.get("nav") or ("research" if slug.startswith("research") else slug)
     head = meta.get("head", "")
-    if slug.startswith("research") and slug != "research/index" and not head:
-        head = "light"
         
     write(out_rel, render(body, title=meta.get("title", "Orvys"), desc=meta.get("desc", ""),
                           path=path, nav=nav, head=head,

@@ -4,8 +4,8 @@ Orvys Research Generator
 Generates all research/* pages: hub, diagnostic, policy, skilling,
 38 district pages, initiatives tracker, ecosystem page, and registry form.
 
-Run via build.py (imported and called there), or standalone:
-    python3 research_src/generate.py
+Uses authentic photography from the Orvys library for every district and research pillar.
+No AI/emoji icons. Direct PDF downloads linked to pre-rendered watermarked PDFs.
 """
 import sys, pathlib, html, json, re
 
@@ -41,7 +41,6 @@ def orvys_cta(heading, body, btn_text="Start a partnership", btn_href="/partner.
 </section>"""
 
 def breadcrumb(*crumbs):
-    """crumbs: list of (label, href) where last href may be None"""
     parts = []
     for i, (label, href) in enumerate(crumbs):
         if href and i < len(crumbs) - 1:
@@ -50,12 +49,47 @@ def breadcrumb(*crumbs):
             parts.append(f'<span>{esc(label)}</span>')
     return f'<nav class="crumbs" aria-label="Breadcrumb">{" / ".join(parts)}</nav>'
 
-def print_btn(label="Download as PDF"):
-    return f"""<button class="btn btn-navy print-btn btn-dl-wm" onclick="window.print()" style="margin-top:16px"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:6px" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>{esc(label)}</button>"""
+def download_pdf_btn(pdf_href, filename, label="Download PDF"):
+    return f"""<a href="{esc(pdf_href)}" download="{esc(filename)}" class="btn btn-gold print-btn btn-dl-wm"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:6px" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>{esc(label)}</a>"""
 
-def wrap_page(content, *, title, desc, path, nav="research", head="light", ogimage="/assets/img/ganga.jpg",
+def print_outlook_header(title, subtitle, pills, series="BIHAR CSR OUTLOOK 2026–27", classification="PUBLIC RESEARCH REPORT", eyebrow="RESEARCH REPORT"):
+    pill_spans = "".join(f"<span><b>{esc(k)}:</b> {esc(str(v))}</span>" for k, v in pills)
+    return f"""
+<div class="print-outlook-header">
+  <div class="poh-bar">
+    <div class="poh-brand">
+      <span class="poh-logo">ORVYS</span>
+      <span class="poh-tagline">STRATEGIC CSR ADVISORY &amp; RESEARCH</span>
+    </div>
+    <div class="poh-meta">
+      <span>SERIES: {esc(series)}</span>
+      <span>CLASSIFICATION: {esc(classification)}</span>
+    </div>
+  </div>
+  <div class="poh-titlebox">
+    <span class="poh-eyebrow">{esc(eyebrow)}</span>
+    <h1 class="poh-title">{esc(title)}</h1>
+    <p class="poh-sub">{esc(subtitle)}</p>
+    <div class="poh-pills">
+      {pill_spans}
+    </div>
+  </div>
+</div>
+"""
+
+def print_advisory_box(title="Orvys Strategic Advisory &amp; Field Delivery", subtitle="partner@orvys.in · www.orvys.in", body="Orvys designs, funds and measures CSR programmes across all 38 Bihar districts with vetted local partners, baseline surveys, Schedule VII compliance, and third-party outcome measurement. Patna · New Delhi."):
+    return f"""
+<div class="print-advisory-box">
+  <div class="pab-head">
+    <span class="pab-title">{esc(title)}</span>
+    <span class="pab-contact">{esc(subtitle)}</span>
+  </div>
+  <p class="pab-desc">{esc(body)}</p>
+</div>
+"""
+
+def wrap_page(content, *, title, desc, path, nav="research", head="", ogimage="/assets/img/ganga.jpg",
               extra_head="", structured_data=None):
-    """Return page HTML with frontmatter processed by build.py."""
     ld_block = ""
     if structured_data:
         ld_block = f'<script type="application/ld+json">{json.dumps(structured_data, ensure_ascii=False)}</script>'
@@ -64,6 +98,7 @@ title: {title}
 desc: {desc}
 nav: {nav}
 head: {head}
+ogimage: {ogimage}
 -->
 {content}
 {ld_block}
@@ -71,6 +106,82 @@ head: {head}
 
 DISTRICT_ROWS = rows()
 DIST_BY_NAME = {r["name"]: r for r in DISTRICT_ROWS}
+
+# ── Authentic photography for every Bihar district ──────────────────────────
+
+DISTRICT_IMAGES = {
+    "Araria": ("flood.jpg", "Flood-prone landscape in the Kosi-Seemanchal belt, Araria"),
+    "Arwal": ("blog/village-2.jpg", "Rural community settlement in Arwal district"),
+    "Aurangabad": ("blog/anganwadi-1.jpg", "Primary child health & nutrition centre in rural Aurangabad"),
+    "Banka": ("blog/vikramshila-2.jpg", "Historical heritage and rural landscape in Banka district"),
+    "Begusarai": ("ganga.jpg", "Industrial and riparian belt along the Ganga at Begusarai"),
+    "Bhagalpur": ("blog/vikramshila-1.jpg", "Excavated remains of Vikramshila University, Bhagalpur"),
+    "Bhojpur": ("blog/paddy-1.jpg", "Fertile agricultural paddy fields in Bhojpur district"),
+    "Buxar": ("blog/farmer-1.jpg", "Smallholder farmer in the agrarian Ganga basin of Buxar"),
+    "Darbhanga": ("blog/darbhanga-1.jpg", "Darbhanga Raj historical complex in Darbhanga"),
+    "Gaya": ("mahabodhi.jpg", "UNESCO World Heritage Mahabodhi Temple, Bodh Gaya"),
+    "Gopalganj": ("blog/paddy-2.jpg", "Sugarcane and paddy farming landscape in Gopalganj"),
+    "Jamui": ("blog/classroom-1.jpg", "Government primary school students in rural Jamui"),
+    "Jehanabad": ("blog/anganwadi-2.jpg", "Rural Anganwadi centre in Jehanabad district"),
+    "Kaimur": ("blog/village-1.jpg", "Rural village settlement against the Kaimur plateau"),
+    "Katihar": ("blog/boat-1.jpg", "Ferry boat traversing flood-prone waterways in Katihar"),
+    "Khagaria": ("blog/makhana-1.jpg", "Wetland harvest in the riverine confluence of Khagaria"),
+    "Kishanganj": ("blog/bridge-1.jpg", "River bridge connecting rural communities in Kishanganj"),
+    "Lakhisarai": ("blog/village-1.jpg", "Rural community landscape in Lakhisarai district"),
+    "Madhepura": ("blog/boat-1.jpg", "Riparian transport across the Kosi floodplains in Madhepura"),
+    "Madhubani": ("madhubani.jpg", "Traditional Mithila art creation in Madhubani district"),
+    "Munger": ("ganga.jpg", "Ganga river basin landscape near Munger"),
+    "Muzaffarpur": ("blog/shg-1.jpg", "Women enterprise and SHG meeting in Muzaffarpur"),
+    "Nalanda": ("nalanda.jpg", "Ancient Nalanda Mahavihara ruins, Nalanda"),
+    "Nawada": ("blog/classroom-2.jpg", "Upper-primary classroom learning session in Nawada"),
+    "Pashchim Champaran": ("blog/phc-1.jpg", "Rural health sub-centre serving communities in West Champaran"),
+    "Patna": ("blog/patna-1.jpg", "Patna riverfront on the southern banks of the Ganga"),
+    "Purbi Champaran": ("blog/skill-2.jpg", "Youth technical skilling workshop in East Champaran"),
+    "Purnia": ("blog/makhana-1.jpg", "Makhana and wetland cultivation in Purnia district"),
+    "Rohtas": ("blog/paddy-2.jpg", "Canal-irrigated agricultural plains in Rohtas"),
+    "Saharsa": ("blog/handpump-1.jpg", "Community potable water handpump in rural Saharsa"),
+    "Samastipur": ("blog/farmer-1.jpg", "Agricultural smallholder farming in Samastipur"),
+    "Saran": ("blog/bridge-1.jpg", "Riverine landscape and connectivity in Saran district"),
+    "Sheikhpura": ("blog/shg-2.jpg", "Women micro-enterprise collective in Sheikhpura"),
+    "Sheohar": ("blog/sikki-2.jpg", "Sikki grass craft artisan at work in Sheohar"),
+    "Sitamarhi": ("school.jpg", "Rural school campus in Sitamarhi district"),
+    "Siwan": ("blog/village-2.jpg", "Village settlement and agrarian community in Siwan"),
+    "Supaul": ("flood.jpg", "Kosi river floodwaters and community resilience in Supaul"),
+    "Vaishali": ("blog/museum-1.jpg", "Historical heritage and archaeological landscape of Vaishali"),
+}
+
+# Photos: a district's own photo (assets/img/districts/<slug>.jpg) is used when available,
+# captioned with its real title. Otherwise an illustrative photo is shown, labelled as such,
+# so no image is ever presented as a place it does not show.
+import json as _json
+_CREDITS = {}
+for _f, _pre in (("assets/img/districts/credits.json", "districts/"), ("assets/img/blog/credits.json", "blog/")):
+    _p = ROOT / _f
+    if _p.exists():
+        for _k, _v in _json.loads(_p.read_text(encoding="utf-8")).items():
+            _CREDITS[_pre + _k] = _v
+_MAIN_TITLES = {"golghar.jpg": "Golghar, Patna", "mahabodhi.jpg": "Mahabodhi Temple, Bodh Gaya", "nalanda.jpg": "Nalanda Mahavihara",
+                "ganga.jpg": "The Ganga at Gandhi Ghat, Patna", "madhubani.jpg": "A Madhubani (Mithila) artist", "flood.jpg": "Flood relief in Bihar",
+                "school.jpg": "A school campus in Bihar", "chhath.jpg": "Chhath on the riverbank, Bihar"}
+_SPECIFIC = {"Gaya": "mahabodhi.jpg", "Nalanda": "nalanda.jpg", "Patna": "golghar.jpg", "Bhagalpur": "blog/vikramshila-1.jpg",
+             "Darbhanga": "blog/darbhanga-2.jpg", "Buxar": "blog/boat-1.jpg", "Madhubani": "madhubani.jpg", "Nawada": "blog/makhana-1.jpg"}
+
+
+def district_photo(name):
+    """Return (image path under /assets/img/, caption, is_specific)."""
+    slug = name.lower().replace(" ", "-")
+    own = f"districts/{slug}.jpg"
+    if (ROOT / "assets" / "img" / own).exists():
+        c = _CREDITS.get(own, {})
+        return own, f"{c.get('title', name)}. Photo: {c.get('artist', 'Wikimedia Commons')}, {c.get('license', '')}, via Wikimedia Commons.".replace(", ,", ","), True
+    img = _SPECIFIC.get(name) or DISTRICT_IMAGES.get(name, ("ganga.jpg", ""))[0]
+    c = _CREDITS.get(img)
+    title = c["title"] if c else _MAIN_TITLES.get(img, "Bihar")
+    specific = name in _SPECIFIC
+    lead = title if specific else f"Illustrative photo: {title}"
+    who = f" Photo: {c['artist']}, {c['license']}, via Wikimedia Commons." if c else ""
+    return img, lead + "." + who, specific
+
 
 def district_narrative(d):
     name = d["name"]
@@ -154,35 +265,46 @@ SPOTLIGHT_HTML = """
 
 def build_hub():
     research_pages = [
-        ("/research/diagnostic.html", "Bihar CSR Diagnostic", "State-level trends, PSU vs private split, per-capita spend, and full 38-district data table.", "📊"),
-        ("/research/policy.html", "Policy &amp; Governance", "Analysis of Bihar's 2025 State CSR Policy, real-time portal, and convergence roundtables.", "⚖️"),
-        ("/research/skilling.html", "Skilling &amp; Education", "Verified workforce development programmes (IBM, Pratham, Piramal) and aspirational district gaps.", "🎓"),
-        ("/research/ecosystem.html", "CSR Ecosystem Directory", "Verified NGOs, corporate foundations, PSUs, and platforms active across Bihar.", "🌐"),
-        ("/research/tracker.html", "Initiatives Tracker", "Interactive directory of all active CSR projects in Bihar, filterable by sector and geography.", "🗂"),
-        ("/research/register.html", "Register an Initiative", "Submit your NGO or district-level programme to join the verified Bihar CSR directory.", "📝"),
+        ("/research/diagnostic.html", "blog/paddy-1.jpg", "01 · Data & Diagnostic", "Bihar CSR Diagnostic", "State-level trends, PSU vs private split, per-capita spend, and full 38-district data table."),
+        ("/research/policy.html", "golghar.jpg", "02 · Policy Brief", "Policy &amp; Governance", "Analysis of Bihar's 2025 State CSR Policy, real-time portal, and convergence roundtables."),
+        ("/research/skilling.html", "blog/skill-2.jpg", "03 · Workforce & Skilling", "Skilling &amp; Education", "Verified workforce development programmes (IBM, Pratham, Piramal) and aspirational district gaps."),
+        ("/research/ecosystem.html", "blog/shg-1.jpg", "04 · Field Ecosystem", "CSR Ecosystem Directory", "Verified NGOs, corporate foundations, PSUs, and platforms active across Bihar."),
+        ("/research/tracker.html", "blog/bridge-1.jpg", "05 · Active Projects", "Initiatives Tracker", "Interactive directory of all active CSR projects in Bihar, filterable by sector and geography."),
+        ("/research/register.html", "blog/classroom-1.jpg", "06 · Implementer Registry", "Register an Initiative", "Submit your NGO or district-level programme to join the verified Bihar CSR directory."),
     ]
 
     cards_html = ""
-    for href, title, desc_txt, icon in research_pages:
+    for href, img, tag, title, desc_txt in research_pages:
         cards_html += f"""
 <a class="res-card rv" href="{href}">
-  <span class="res-icon">{icon}</span>
-  <h3>{title}</h3>
-  <p>{desc_txt}</p>
-  <span class="link" style="font-size:14px">Explore section →</span>
+  <div class="res-card-img"><img src="/assets/img/{img}" alt="{esc(title)}" loading="lazy"></div>
+  <div class="res-card-body">
+    <span class="k">{tag}</span>
+    <h3>{title}</h3>
+    <p>{desc_txt}</p>
+    <span class="link" style="font-size:14px">Explore section →</span>
+  </div>
 </a>"""
 
-    # All 38 districts grid
     all_dists = sorted(DISTRICT_ROWS, key=lambda r: r["name"])
     dist_cards = ""
     for d in all_dists:
+        img_file, img_caption, _ = district_photo(d["name"])
         tags = ""
-        if d["aspirational"]: tags += '<span class="tag-asp" title="NITI Aayog Aspirational District">A</span>'
-        if d["flood"]: tags += '<span class="tag-flood" title="Kosi-Seemanchal Flood Belt">F</span>'
+        if d["aspirational"]: tags += '<span class="tag-asp" title="NITI Aayog Aspirational District">Aspirational</span>'
+        if d["flood"]: tags += '<span class="tag-flood" title="Kosi-Seemanchal Flood Belt">Flood Belt</span>'
         dist_cards += f"""
-<a class="dist-mini rv" href="/research/districts/{d['slug']}.html" data-asp="{str(d['aspirational']).lower()}" data-flood="{str(d['flood']).lower()}">
-  <strong>{esc(d['name'])}</strong>{tags}
-  <span>₹{d['fy24']:.2f} Cr <small>FY24</small></span>
+<a class="dist-card rv" href="/research/districts/{d['slug']}.html" data-asp="{str(d['aspirational']).lower()}" data-flood="{str(d['flood']).lower()}">
+  <div class="dist-card-img"><img src="/assets/img/{img_file}" alt="{esc(d['name'])} district" loading="lazy">
+    <div class="dist-card-over"><div class="dist-tags">{tags}</div><strong>{esc(d['name'])}</strong></div></div>
+  <div class="dist-card-body">
+    <div class="dist-stats">
+      <div><b>{"nil" if d['fy24'] == 0 else f"₹{d['fy24']:.2f} Cr"}</b><span>CSR, FY24</span></div>
+      <div><b>₹{d['pc24']:.1f}</b><span>per person</span></div>
+    </div>
+    <div class="dist-rank"><div class="dist-rank-bar"><i style="width:{max(2, (39 - d['rankpc']) / 38 * 100):.0f}%"></i></div><span>Rank {d['rankpc']} of 38 per person</span></div>
+    <span class="dist-more">View profile →</span>
+  </div>
 </a>"""
 
     content = f"""
@@ -195,7 +317,7 @@ def build_hub():
     <div class="ctas">
       <a href="/research/diagnostic.html" class="btn btn-gold">View CSR Diagnostic</a>
       <a href="/insights.html#download" class="btn btn-ghost">Download 2026 Outlook Report</a>
-      {print_btn("Download Summary (PDF)")}
+      {download_pdf_btn("/research/pdf/bihar-csr-research-hub.pdf", "bihar-csr-research-hub-orvys.pdf", "Download Hub Summary (PDF)")}
     </div>
   </div>
   <span class="credit">Nalanda Mahavihara</span>
@@ -227,7 +349,7 @@ def build_hub():
     <div class="narrow rv">
       <span class="chip">38 District Profiles</span>
       <h2 style="margin-top:22px">Bihar CSR by District</h2>
-      <p style="margin-top:16px;color:var(--mute)">Every district in Bihar has a dedicated profile with 4-year trend data, local initiatives, development deficits, and investment opportunities.</p>
+      <p style="margin-top:16px;color:var(--mute)">Every district in Bihar has a dedicated profile with authentic imagery, 4-year trend data, local initiatives, development deficits, and investment opportunities.</p>
     </div>
     <div class="filters" style="margin-top:28px">
       <button class="chip on" data-dfilter="all">All 38 Districts</button>
@@ -236,8 +358,8 @@ def build_hub():
     </div>
     <div class="dist-grid" style="margin-top:28px" id="hub-dist-grid">{dist_cards}</div>
     <p class="small muted" style="margin-top:24px">
-      <span class="tag-asp">A</span> = NITI Aayog aspirational district ·
-      <span class="tag-flood">F</span> = Kosi-Seemanchal flood belt ·
+      <span class="tag-asp">Aspirational</span> = NITI Aayog aspirational district ·
+      <span class="tag-flood">Flood Belt</span> = Kosi-Seemanchal flood belt ·
       Data: Ministry of Corporate Affairs (Rajya Sabha UQ 1010, Dec 2025).
     </p>
     <p style="margin-top:28px"><a class="link rv" href="/research/districts/index.html">View full district index table →</a></p>
@@ -247,7 +369,7 @@ def build_hub():
 <script>
 (function(){{
   var chips = document.querySelectorAll('[data-dfilter]');
-  var cards = document.querySelectorAll('#hub-dist-grid .dist-mini');
+  var cards = document.querySelectorAll('#hub-dist-grid .dist-card');
   chips.forEach(function(c){{
     c.addEventListener('click', function(){{
       chips.forEach(function(x){{ x.classList.remove('on'); }});
@@ -309,17 +431,20 @@ def build_diagnostic():
 </tr>"""
 
     content = f"""
-<article>
-<header class="post-head">
-  <div class="wrap narrow">
-    {breadcrumb(("Home","/"),("Research","/research/index.html"),("Bihar CSR Diagnostic",None))}
-    <span class="chip">Research · Diagnostic</span>
-    <h1>Bihar CSR Diagnostic</h1>
-    <p class="lede">Four years of primary district-level CSR data for Bihar — trends, corporate vs PSU breakdown, and per-capita analysis.</p>
-    <div class="byline">Orvys Research Team · November 2026 · Source: Ministry of Corporate Affairs</div>
-    {print_btn()}
+<section class="hero page-hero">
+  <div class="bg" style="background-image:url('/assets/img/blog/paddy-1.jpg')"></div>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb" style="color:rgba(255,255,255,0.7);margin-bottom:18px"><a href="/" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Home</a> / <a href="/research/index.html" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Research</a> / <span>Diagnostic</span></nav>
+    <span class="eyebrow" style="color:var(--gold2)">Statewide Diagnostic</span>
+    <h1 style="margin-top:20px">Bihar CSR <em>Diagnostic</em></h1>
+    <p>Four years of primary district-level CSR data for Bihar — trends, corporate vs PSU breakdown, and per-capita disparity.</p>
+    <div class="ctas">
+      {download_pdf_btn("/research/pdf/bihar-csr-diagnostic.pdf", "bihar-csr-diagnostic-orvys.pdf")}
+      <a href="/research/districts/index.html" class="btn btn-ghost">Browse 38 Districts</a>
+    </div>
   </div>
-</header>
+  <span class="credit">Bhojpur agricultural plains</span>
+</section>
 
 <div class="wrap" style="margin-top:60px">
 
@@ -356,14 +481,13 @@ def build_diagnostic():
 {sources_block(["rs1010","ls2338","nfhs","census"])}
 
 </div>
-</article>
 
 {orvys_cta("Turn data into targeted outcomes.", "Orvys uses this primary dataset to build compliant, high-impact CSR portfolios in under-served districts.")}
 """
     return wrap_page(content,
         title="Bihar CSR Diagnostic: 4-Year District Data | Orvys",
         desc="Four years of Bihar district-level CSR data: trends, PSU vs private split, per-capita spend, and full district table.",
-        path="research/diagnostic.html")
+        path="research/diagnostic.html", head="")
 
 
 # ── 3 · Policy page ──────────────────────────────────────────────────────────
@@ -385,17 +509,20 @@ def build_policy():
 </div>"""
 
     content = f"""
-<article>
-<header class="post-head">
-  <div class="wrap narrow">
-    {breadcrumb(("Home","/"),("Research","/research/index.html"),("Policy &amp; Governance",None))}
-    <span class="chip">Research · Policy</span>
-    <h1>Bihar CSR Policy &amp; Governance</h1>
-    <p class="lede">Bihar's first State CSR Policy (2025), the new real-time CSR portal, and multi-stakeholder roundtables — tracked and analyzed.</p>
-    <div class="byline">Orvys Research Team · November 2026</div>
-    {print_btn()}
+<section class="hero page-hero">
+  <div class="bg" style="background-image:url('/assets/img/golghar.jpg')"></div>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb" style="color:rgba(255,255,255,0.7);margin-bottom:18px"><a href="/" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Home</a> / <a href="/research/index.html" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Research</a> / <span>Policy</span></nav>
+    <span class="eyebrow" style="color:var(--gold2)">Governance Brief</span>
+    <h1 style="margin-top:20px">Bihar CSR <em>Policy &amp; Governance</em></h1>
+    <p>Bihar's first State CSR Policy (2025), the new real-time CSR portal, and multi-stakeholder roundtables — tracked and analyzed.</p>
+    <div class="ctas">
+      {download_pdf_btn("/research/pdf/bihar-csr-policy.pdf", "bihar-csr-policy-orvys.pdf")}
+      <a href="/research/tracker.html" class="btn btn-ghost">View Tracker</a>
+    </div>
   </div>
-</header>
+  <span class="credit">Golghar, Patna</span>
+</section>
 
 <div class="wrap" style="margin-top:60px">
 
@@ -427,14 +554,13 @@ def build_policy():
 {sources_block(["policy","portal","roundtable"])}
 
 </div>
-</article>
 
 {orvys_cta("Align your CSR with state priorities.", "Orvys briefs corporate boards on state priorities and facilitates high-level MoUs with government departments.")}
 """
     return wrap_page(content,
         title="Bihar CSR Policy 2025: State Governance Tracker | Orvys",
         desc="Track Bihar's 2025 State CSR Policy, the Bihar CSR Portal, and UNICEF-CIMP roundtable outcomes with Orvys research.",
-        path="research/policy.html")
+        path="research/policy.html", head="")
 
 
 # ── 4 · Skilling page ────────────────────────────────────────────────────────
@@ -465,17 +591,20 @@ def build_skilling():
 </tr>"""
 
     content = f"""
-<article>
-<header class="post-head">
-  <div class="wrap narrow">
-    {breadcrumb(("Home","/"),("Research","/research/index.html"),("Skilling &amp; Education",None))}
-    <span class="chip">Research · Skilling</span>
-    <h1>CSR Skilling &amp; Education in Bihar</h1>
-    <p class="lede">Verified workforce development, digital skills, and foundational learning programmes operating across Bihar.</p>
-    <div class="byline">Orvys Research Team · November 2026</div>
-    {print_btn()}
+<section class="hero page-hero">
+  <div class="bg" style="background-image:url('/assets/img/blog/skill-2.jpg')"></div>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb" style="color:rgba(255,255,255,0.7);margin-bottom:18px"><a href="/" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Home</a> / <a href="/research/index.html" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Research</a> / <span>Skilling</span></nav>
+    <span class="eyebrow" style="color:var(--gold2)">Workforce Brief</span>
+    <h1 style="margin-top:20px">CSR Skilling &amp; <em>Education</em> in Bihar</h1>
+    <p>Verified workforce development, digital skills, and foundational learning programmes operating across Bihar.</p>
+    <div class="ctas">
+      {download_pdf_btn("/research/pdf/bihar-csr-skilling.pdf", "bihar-csr-skilling-orvys.pdf")}
+      <a href="/research/ecosystem.html" class="btn btn-ghost">View Partners</a>
+    </div>
   </div>
-</header>
+  <span class="credit">Technical workshop in East Champaran</span>
+</section>
 
 <div class="wrap" style="margin-top:60px">
 
@@ -509,14 +638,13 @@ def build_skilling():
 
 {sources_block(["ibm_stem","ibm_skills","pratham","piramal","stairs","nfhs"])}
 </div>
-</article>
 
 {orvys_cta("Build an employment-linked skilling programme.", "Orvys structures industry-aligned vocational training in district ITIs with verified employer placements.")}
 """
     return wrap_page(content,
         title="CSR Skilling &amp; Education in Bihar | Orvys Research",
         desc="Verified skilling and education CSR initiatives in Bihar: IBM, Pratham, Piramal Foundation, STAIRS and others, with Orvys assessment.",
-        path="research/skilling.html")
+        path="research/skilling.html", head="")
 
 
 # ── 5 · Initiatives Tracker ───────────────────────────────────────────────────
@@ -546,18 +674,22 @@ def build_tracker():
 </tr>"""
 
     content = f"""
-<section class="post-head" style="padding-bottom:40px">
-  <div class="wrap narrow">
-    {breadcrumb(("Home","/"),("Research","/research/index.html"),("Initiatives Tracker",None))}
-    <span class="chip">Research · Tracker</span>
-    <h1>Bihar CSR Initiatives Tracker</h1>
-    <p class="lede">Every verified CSR initiative, MoU, and programme in Bihar — filterable by thematic sector.</p>
-    <div class="byline">Orvys Research Team · November 2026 · {len(INITIATIVES)} initiatives verified</div>
-    {print_btn("Print Tracker (PDF)")}
+<section class="hero page-hero">
+  <div class="bg" style="background-image:url('/assets/img/blog/bridge-1.jpg')"></div>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb" style="color:rgba(255,255,255,0.7);margin-bottom:18px"><a href="/" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Home</a> / <a href="/research/index.html" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Research</a> / <span>Tracker</span></nav>
+    <span class="eyebrow" style="color:var(--gold2)">Field Tracker</span>
+    <h1 style="margin-top:20px">Bihar CSR <em>Initiatives Tracker</em></h1>
+    <p>Every verified CSR initiative, MoU, and programme in Bihar — filterable by thematic sector.</p>
+    <div class="ctas">
+      {download_pdf_btn("/research/pdf/bihar-csr-tracker.pdf", "bihar-csr-tracker-orvys.pdf")}
+      <a href="/research/register.html" class="btn btn-ghost">Register Programme</a>
+    </div>
   </div>
+  <span class="credit">Connecting waterways in Bihar</span>
 </section>
 
-<section style="padding-top:20px">
+<section style="padding-top:40px">
   <div class="wrap">
     <div class="filters" style="margin-bottom:28px">{chips}</div>
     <div class="formcard rv" style="overflow-x:auto">
@@ -603,7 +735,7 @@ def build_tracker():
     return wrap_page(content,
         title="Bihar CSR Initiatives Tracker | Orvys Research",
         desc=f"All {len(INITIATIVES)} verified CSR initiatives in Bihar, filterable by sector and district. Updated November 2026.",
-        path="research/tracker.html")
+        path="research/tracker.html", head="")
 
 
 # ── 6 · Ecosystem page ───────────────────────────────────────────────────────
@@ -630,15 +762,19 @@ def build_ecosystem():
 </div>"""
 
     content = f"""
-<section class="post-head" style="padding-bottom:40px">
-  <div class="wrap narrow">
-    {breadcrumb(("Home","/"),("Research","/research/index.html"),("CSR Ecosystem",None))}
-    <span class="chip">Research · Ecosystem</span>
-    <h1>Bihar CSR Ecosystem Directory</h1>
-    <p class="lede">Verified implementing NGOs, corporate foundations, multilaterals, PSUs, and platforms active in Bihar.</p>
-    <div class="byline">Orvys Research Team · November 2026 · Verified Directory</div>
-    {print_btn("Print Directory (PDF)")}
+<section class="hero page-hero">
+  <div class="bg" style="background-image:url('/assets/img/blog/shg-1.jpg')"></div>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb" style="color:rgba(255,255,255,0.7);margin-bottom:18px"><a href="/" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Home</a> / <a href="/research/index.html" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Research</a> / <span>Ecosystem</span></nav>
+    <span class="eyebrow" style="color:var(--gold2)">Partner Directory</span>
+    <h1 style="margin-top:20px">Bihar CSR <em>Ecosystem Directory</em></h1>
+    <p>Verified implementing NGOs, corporate foundations, multilaterals, PSUs, and platforms active in Bihar.</p>
+    <div class="ctas">
+      {download_pdf_btn("/research/pdf/bihar-csr-ecosystem.pdf", "bihar-csr-ecosystem-orvys.pdf")}
+      <a href="/research/register.html" class="btn btn-ghost">Register Organisation</a>
+    </div>
   </div>
+  <span class="credit">Women's enterprise in Muzaffarpur</span>
 </section>
 
 <section style="padding-top:20px;padding-bottom:60px">
@@ -675,7 +811,7 @@ def build_ecosystem():
     return wrap_page(content,
         title="Bihar CSR Ecosystem Directory: NGOs, PSUs &amp; Foundations | Orvys",
         desc="Verified directory of NGOs, foundations, PSUs and platforms active in Bihar CSR — updated November 2026.",
-        path="research/ecosystem.html")
+        path="research/ecosystem.html", head="")
 
 
 # ── 7 · Registry form page ───────────────────────────────────────────────────
@@ -690,7 +826,7 @@ def build_register():
     <h1>Register your NGO or District Initiative</h1>
     <p class="lede">Submit your organisation or district-level programme for inclusion in the Bihar CSR Ecosystem Tracker.</p>
     <div class="byline">Orvys Research · Free directory for verified CSR implementers</div>
-    {print_btn("Print Questionnaire (PDF)")}
+    <button type="button" class="btn btn-navy print-btn btn-dl-wm" onclick="window.print()" style="margin-top:16px"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:6px" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Print Questionnaire (PDF)</button>
   </div>
 </header>
 
@@ -830,7 +966,7 @@ def build_register():
     return wrap_page(content,
         title="Register NGO or District Initiative | Orvys Research",
         desc="Submit your organisation or district-level CSR programme for inclusion in the verified Bihar CSR Ecosystem Tracker.",
-        path="research/register.html")
+        path="research/register.html", head="light")
 
 
 # ── 8 · 38 District pages ────────────────────────────────────────────────────
@@ -838,9 +974,11 @@ def build_register():
 def build_district(d):
     name = d["name"]
     s = d["series"]
-    tags_html = ""
-    if d["aspirational"]: tags_html += ' <span class="tag-asp">Aspirational District</span>'
-    if d["flood"]: tags_html += ' <span class="tag-flood">Flood Belt</span>'
+    
+    flags_list = []
+    if d["aspirational"]: flags_list.append("Aspirational District")
+    if d["flood"]: flags_list.append("Flood Belt")
+    flags_label = " · ".join(flags_list) if flags_list else "General District"
 
     vals = [v(x) for x in s]
     chart = C.vbar(["FY21","FY22","FY23","FY24"], vals,
@@ -860,20 +998,24 @@ def build_district(d):
 </div>"""
 
     if not init_cards:
-        init_cards = '<p style="color:var(--mute)">No verified initiatives recorded for this district yet. <a href="/research/register.html" class="link">Register an initiative in this district →</a></p>'
+        init_cards = f'<p style="color:var(--mute)">No verified initiatives recorded for {esc(name)} district yet. <a href="/research/register.html" class="link">Register an initiative in this district →</a></p>'
 
     def cr(x): return f"₹{x:.2f} Cr" if x else "—"
     total4 = sum(vals)
     state_avg24 = sum(r["fy24"] for r in DISTRICT_ROWS) / 38
     vs_avg = "above" if d["fy24"] > state_avg24 else "below"
 
+    # Authentic photo for this district
+    img_file, img_caption, _ = district_photo(name)
+
     # Narrative & opportunities
     dev_context, opps, orvys_view = district_narrative(d)
     opps_html = ""
     for title, descr in opps:
         opps_html += f"""
-<div class="pillar" style="padding:24px 0;border-right:0;border-bottom:1px solid var(--line)">
-  <h4 style="font-size:18px;margin-bottom:6px">{esc(title)}</h4>
+<div class="pillar">
+  <div class="n">Priority Sector</div>
+  <h3 style="font-size:20px;margin-bottom:10px">{esc(title)}</h3>
   <p style="color:var(--mute);font-size:15px;margin:0">{esc(descr)}</p>
 </div>"""
 
@@ -886,93 +1028,142 @@ def build_district(d):
               sorted_all[(idx + 2) % len(sorted_all)]]
     nearby_links = "".join(f'<a href="/research/districts/{r["slug"]}.html" class="chip" style="font-size:13px">{esc(r["name"])}</a>' for r in nearby)
 
+    pills = [
+        ("State Rank", f"#{d['rank24']} of 38 Districts"),
+        ("FY24 Inflow", cr(d['fy24'])),
+        ("Per-Capita", f"₹{d['pc24']:.1f} (State Avg: ₹{sum(r['fy24'] for r in DISTRICT_ROWS)*1e7/BIHAR_POP:.1f})"),
+        ("Census Pop", f"{d['pop']:,}"),
+        ("Classification", flags_label),
+        ("Benchmark Source", "MCA Parliamentary Filings & Census"),
+    ]
+    poh = print_outlook_header(f"{name} District CSR Outlook",
+                               f"Spend Analytics, Development Deficit Mapping & Strategic Investment Horizons in {name}, Bihar.",
+                               pills, eyebrow=f"DISTRICT OUTLOOK DOSSIER · {flags_label.upper()}")
+    pab = print_advisory_box(f"Orvys Strategic Advisory &amp; Field Delivery · {name}",
+                             "partner@orvys.in · www.orvys.in",
+                             f"Orvys designs and deploys targeted CSR programmes in {name} with vetted local partners, baseline surveys, Schedule VII compliance, and independent third-party outcome measurement. Patna · New Delhi.")
+
     content = f"""
-<article>
-<header class="post-head">
-  <div class="wrap narrow">
-    {breadcrumb(("Home","/"),("Research","/research/index.html"),("Districts","/research/districts/index.html"),(name, None))}
-    <span class="chip">District Profile</span>
-    <h1>{esc(name)} {tags_html}</h1>
-    <p class="lede">District-level CSR data, development deficits, and investment opportunities in {esc(name)}, Bihar.</p>
-    <div class="byline">Orvys Research · November 2026 · Source: MCA Parliamentary Data</div>
-    {print_btn()}
+{poh}
+<section class="hero page-hero">
+  <div class="bg" style="background-image:url('/assets/img/{img_file}')"></div>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb" style="color:rgba(255,255,255,0.7);margin-bottom:18px"><a href="/" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Home</a> / <a href="/research/index.html" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Research</a> / <a href="/research/districts/index.html" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Districts</a> / <span>{esc(name)}</span></nav>
+    <span class="eyebrow" style="color:var(--gold2)">District Profile · {esc(flags_label)}</span>
+    <h1 style="margin-top:20px">{esc(name)} <em>CSR Research</em></h1>
+    <p>District-level CSR data, development deficits, and investment opportunities in {esc(name)}, Bihar.</p>
+    <div class="ctas">
+      {download_pdf_btn(f"/research/pdf/districts/{d['slug']}-csr-research.pdf", f"{d['slug']}-csr-research-orvys.pdf")}
+      <a href="/research/districts/index.html" class="btn btn-ghost">All 38 Districts</a>
+    </div>
   </div>
-</header>
+  <span class="credit">{esc(img_caption)}</span>
+</section>
 
-<div class="wrap" style="margin-top:48px">
-
-<div class="stats rv" style="margin-bottom:60px">
-  <div><b>{cr(d['fy24'])}</b><span>CSR in FY 2023-24</span></div>
-  <div><b>₹{d['pc24']:.1f}</b><span>per person (state avg: ₹{sum(r['fy24'] for r in DISTRICT_ROWS)*1e7/BIHAR_POP:.1f})</span></div>
-  <div><b>{cr(total4)}</b><span>Total CSR, FY21–FY24</span></div>
-  <div><b>#{d['rank24']}</b><span>state rank of 38 districts</span></div>
-</div>
-
-<div class="narrow rv">
-  <span class="chip">Development Context</span>
-  <h2 style="margin-top:16px">Socio-Economic &amp; CSR Profile</h2>
-  <p style="color:var(--mute);margin:16px 0 24px;line-height:1.75;font-size:17px">{esc(dev_context)}</p>
-</div>
-
-<div class="narrow rv" style="margin-top:60px">
-  <span class="chip">4-Year Trend</span>
-  <h2 style="margin-top:16px">CSR Inflows in {esc(name)}</h2>
-</div>
-<div class="chart-wrap rv" style="margin:24px 0 60px">{chart}</div>
-
-<div class="narrow rv">
-  <span class="chip">Investment Opportunities</span>
-  <h2 style="margin-top:16px">Priority CSR Interventions</h2>
-  <div style="margin-top:24px">{opps_html}</div>
-</div>
-
-<div class="narrow rv" style="margin-top:60px">
-  <div class="formcard" style="border-left:4px solid var(--gold)">
-    <span class="chip" style="color:var(--gold)">Orvys Perspective</span>
-    <h3 style="margin:14px 0 10px">Strategic Assessment</h3>
-    <p style="color:var(--mute);font-size:16px;line-height:1.7;margin:0">{esc(orvys_view)}</p>
+<section class="dark sec-sm">
+  <div class="wrap">
+    <div class="stats rv">
+      <div><b>{cr(d['fy24'])}</b><span>CSR received in FY 2023-24</span></div>
+      <div><b>₹{d['pc24']:.1f}</b><span>per person (state avg: ₹{sum(r['fy24'] for r in DISTRICT_ROWS)*1e7/BIHAR_POP:.1f})</span></div>
+      <div><b>{cr(total4)}</b><span>Total CSR, FY21–FY24</span></div>
+      <div><b>#{d['rank24']}</b><span>state rank of 38 districts</span></div>
+    </div>
   </div>
-</div>
+</section>
 
-<div class="narrow rv" style="margin-top:60px">
-  <span class="chip">Active Programmes</span>
-  <h2 style="margin-top:16px">Known CSR Activity in {esc(name)}</h2>
-  <p style="color:var(--mute);margin:12px 0 24px">Verified corporate and statewide programmes operating within {esc(name)} district.</p>
-  <div style="margin-bottom:60px">{init_cards}</div>
-</div>
-
-<div class="narrow rv formcard" style="margin-bottom:60px">
-  <span class="chip">District Factsheet</span>
-  <table style="margin-top:16px;width:100%;font-size:15px;border-collapse:collapse">
-    <tr><td style="padding:10px 0;color:var(--mute);width:220px">Census 2011 Population</td><td style="font-weight:600">{d['pop']:,}</td></tr>
-    <tr><td style="padding:10px 0;color:var(--mute)">NITI Aayog Aspirational</td><td>{"Yes — Aspirational District" if d['aspirational'] else "No"}</td></tr>
-    <tr><td style="padding:10px 0;color:var(--mute)">Riparian Flood Belt</td><td>{"Yes — Kosi-Seemanchal Flood Belt" if d['flood'] else "No"}</td></tr>
-    <tr><td style="padding:10px 0;color:var(--mute)">FY 2020-21 CSR</td><td>{cr(s[0])}</td></tr>
-    <tr><td style="padding:10px 0;color:var(--mute)">FY 2021-22 CSR</td><td>{cr(s[1])}</td></tr>
-    <tr><td style="padding:10px 0;color:var(--mute)">FY 2022-23 CSR</td><td>{cr(s[2])}</td></tr>
-    <tr><td style="padding:10px 0;color:var(--mute);font-weight:700">FY 2023-24 CSR</td><td style="font-weight:700">{cr(s[3])}</td></tr>
-    <tr><td style="padding:10px 0;color:var(--mute)">4-Year Cumulative CSR</td><td style="font-weight:700;color:var(--gold)">{cr(total4)}</td></tr>
-  </table>
-</div>
-
-<div class="narrow rv" style="margin-bottom:60px;text-align:center">
-  <span class="eyebrow" style="margin-bottom:12px">Explore More Districts</span>
-  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px">
-    {nearby_links}
+<section>
+  <div class="wrap split r">
+    <div class="rv">
+      <span class="chip">Socio-Economic Profile</span>
+      <h2 style="margin:20px 0 20px">Development Context &amp; Need</h2>
+      <p class="lede">{esc(dev_context)}</p>
+      <div class="formcard" style="border-left:4px solid var(--gold);margin-top:32px">
+        <span class="chip" style="color:var(--gold)">Orvys Perspective</span>
+        <h3 style="margin:14px 0 10px">Strategic Assessment</h3>
+        <p style="color:var(--mute);font-size:16px;line-height:1.7;margin:0">{esc(orvys_view)}</p>
+      </div>
+    </div>
+    <figure class="figure rv">
+      <img src="/assets/img/{img_file}" alt="{esc(img_caption)}" loading="lazy">
+      <div class="tag"><b>₹{d['pc24']:.1f}</b><span>CSR per person in {esc(name)} (state avg: ₹{sum(r['fy24'] for r in DISTRICT_ROWS)*1e7/BIHAR_POP:.1f})</span></div>
+      <figcaption>{esc(img_caption)}</figcaption>
+    </figure>
   </div>
-  <p style="margin-top:20px"><a href="/research/districts/index.html" class="link">View all 38 Bihar districts →</a></p>
-</div>
+</section>
 
-{sources_block(["rs1010","census"])}
+<section class="sand">
+  <div class="wrap">
+    <div class="narrow rv">
+      <span class="chip">Investment Opportunities</span>
+      <h2 style="margin-top:20px">Priority CSR Interventions in {esc(name)}</h2>
+      <p style="color:var(--mute);margin-top:14px">High-impact development pathways aligned with Schedule VII and {esc(name)}'s specific deficits.</p>
+    </div>
+    <div class="pillars rv" style="margin-top:40px">
+      {opps_html}
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap split">
+    <div class="rv">
+      <span class="chip">4-Year Trend</span>
+      <h2 style="margin:20px 0 20px">CSR Inflows in {esc(name)}, FY21–FY24</h2>
+      <p style="color:var(--mute);margin-bottom:24px">Annual disbursements reported by the Ministry of Corporate Affairs, showing growth and year-on-year volatility.</p>
+      <div class="chart-wrap">{chart}</div>
+    </div>
+    <div class="rv">
+      <div class="formcard">
+        <span class="chip">District Factsheet</span>
+        <table style="margin-top:16px;width:100%;font-size:15px;border-collapse:collapse">
+          <tr><td style="padding:10px 0;color:var(--mute);width:220px">Census 2011 Population</td><td style="font-weight:600">{d['pop']:,}</td></tr>
+          <tr><td style="padding:10px 0;color:var(--mute)">NITI Aayog Aspirational</td><td>{"Yes — Aspirational District" if d['aspirational'] else "No"}</td></tr>
+          <tr><td style="padding:10px 0;color:var(--mute)">Riparian Flood Belt</td><td>{"Yes — Kosi-Seemanchal Flood Belt" if d['flood'] else "No"}</td></tr>
+          <tr><td style="padding:10px 0;color:var(--mute)">FY 2020-21 CSR</td><td>{cr(s[0])}</td></tr>
+          <tr><td style="padding:10px 0;color:var(--mute)">FY 2021-22 CSR</td><td>{cr(s[1])}</td></tr>
+          <tr><td style="padding:10px 0;color:var(--mute)">FY 2022-23 CSR</td><td>{cr(s[2])}</td></tr>
+          <tr><td style="padding:10px 0;color:var(--mute);font-weight:700">FY 2023-24 CSR</td><td style="font-weight:700">{cr(s[3])}</td></tr>
+          <tr><td style="padding:10px 0;color:var(--mute)">4-Year Cumulative CSR</td><td style="font-weight:700;color:var(--gold)">{cr(total4)}</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="paper">
+  <div class="wrap">
+    <div class="narrow rv">
+      <span class="chip">Active Programmes</span>
+      <h2 style="margin-top:20px">Known CSR Activity in {esc(name)}</h2>
+      <p style="color:var(--mute);margin:12px 0 24px">Verified corporate, PSU, and statewide programmes operating within {esc(name)} district.</p>
+      <div style="margin-bottom:40px">{init_cards}</div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-sm">
+  <div class="wrap" style="text-align:center">
+    <span class="eyebrow" style="margin-bottom:12px">Explore More Districts</span>
+    <h2 style="margin:16px 0 20px">Adjacent &amp; Regional Districts</h2>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px">
+      {nearby_links}
+    </div>
+    <p style="margin-top:28px"><a href="/research/districts/index.html" class="link">View all 38 Bihar districts directory →</a></p>
+  </div>
+</section>
+
+<div class="wrap">
+  {sources_block(["rs1010","census"])}
 </div>
-</article>
 
 {orvys_cta(f"Invest in {name}.", f"Orvys designs and deploys targeted CSR programmes in {name} with vetted local partners, baseline surveys, and third-party outcome measurement.")}
 """
     return wrap_page(content,
         title=f"{name} District CSR Data &amp; Opportunities | Orvys Research",
         desc=f"CSR spend data, development context and investment opportunities for {name} district, Bihar. FY24 spend: ₹{d['fy24']:.2f} Cr.",
-        path=f"research/districts/{d['slug']}.html")
+        path=f"research/districts/{d['slug']}.html",
+        head="",
+        ogimage=f"/assets/img/{img_file}")
 
 
 # ── 9 · District index ────────────────────────────────────────────────────────
@@ -995,28 +1186,37 @@ def build_district_index():
 
     cards = ""
     for d in sorted(DISTRICT_ROWS, key=lambda r: r["name"]):
+        img_file, _, _ = district_photo(d["name"])
         tags = ""
-        if d["aspirational"]: tags += '<span class="tag-asp">A</span>'
-        if d["flood"]: tags += '<span class="tag-flood">F</span>'
+        if d["aspirational"]: tags += '<span class="tag-asp">Aspirational</span>'
+        if d["flood"]: tags += '<span class="tag-flood">Flood Belt</span>'
         cards += f"""
-<a class="dist-mini rv" href="/research/districts/{d['slug']}.html">
-  <strong>{esc(d['name'])}</strong>{tags}
-  <span>₹{d['fy24']:.2f} Cr <small>FY24</small></span>
+<a class="dist-card rv" href="/research/districts/{d['slug']}.html">
+  <div class="dist-card-img"><img src="/assets/img/{img_file}" alt="{esc(d['name'])} district" loading="lazy"></div>
+  <div class="dist-card-body">
+    <strong>{esc(d['name'])}</strong>
+    <div>{tags}</div>
+    <span>₹{d['fy24']:.2f} Cr <small>FY24</small></span>
+  </div>
 </a>"""
 
     content = f"""
-<section class="post-head" style="padding-bottom:40px">
-  <div class="wrap narrow">
-    {breadcrumb(("Home","/"),("Research","/research/index.html"),("All Districts",None))}
-    <span class="chip">District Directory</span>
-    <h1>Bihar CSR by District: All 38 Districts</h1>
-    <p class="lede">Comprehensive district-by-district CSR directory with population, 4-year cumulative funding, and per-capita indicators.</p>
-    <div class="byline">Orvys Research Team · November 2026 · 38 Districts Mapped</div>
-    {print_btn()}
+<section class="hero page-hero">
+  <div class="bg" style="background-image:url('/assets/img/blog/bridge-1.jpg')"></div>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb" style="color:rgba(255,255,255,0.7);margin-bottom:18px"><a href="/" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Home</a> / <a href="/research/index.html" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Research</a> / <span>Districts</span></nav>
+    <span class="eyebrow" style="color:var(--gold2)">District Directory</span>
+    <h1 style="margin-top:20px">Bihar CSR by District: <em>All 38 Districts</em></h1>
+    <p>Comprehensive district-by-district CSR directory with authentic local photography, population, 4-year cumulative funding, and per-capita indicators.</p>
+    <div class="ctas">
+      {download_pdf_btn("/research/pdf/districts/all-districts-directory.pdf", "all-bihar-districts-csr-directory.pdf", "Download Directory (PDF)")}
+      <a href="/research/index.html" class="btn btn-ghost">Research Hub</a>
+    </div>
   </div>
+  <span class="credit">Connecting waterways in Bihar</span>
 </section>
 
-<section style="padding-top:20px">
+<section style="padding-top:40px">
   <div class="wrap">
     <div class="formcard rv" style="overflow-x:auto">
       <table style="width:100%;border-collapse:collapse;font-size:14.5px;min-width:700px">
@@ -1036,7 +1236,7 @@ def build_district_index():
     </div>
     
     <div style="margin-top:64px">
-      <div class="narrow rv"><span class="chip">Quick Directory</span><h2 style="margin-top:16px">Browse by name</h2></div>
+      <div class="narrow rv"><span class="chip">Visual Directory</span><h2 style="margin-top:16px">Browse all 38 districts with local photography</h2></div>
       <div class="dist-grid" style="margin-top:24px">{cards}</div>
     </div>
     
@@ -1053,7 +1253,7 @@ def build_district_index():
     return wrap_page(content,
         title="Bihar CSR by District: All 38 Districts Directory | Orvys Research",
         desc="CSR spend, population, and investment data for all 38 Bihar districts. Updated November 2026 from official parliamentary data.",
-        path="research/districts/index.html")
+        path="research/districts/index.html", head="")
 
 
 # ── Main: generate all files ──────────────────────────────────────────────────
@@ -1075,13 +1275,9 @@ def generate_all(root_path=None):
     pages = {
         "research/index.html": hub,
         "research/diagnostic.html": diag,
-        "research/bihar-csr-diagnostic.html": diag,
         "research/policy.html": policy,
-        "research/bihar-csr-policy.html": policy,
         "research/skilling.html": skilling,
-        "research/bihar-csr-skilling.html": skilling,
         "research/tracker.html": tracker,
-        "research/initiatives-tracker.html": tracker,
         "research/ecosystem.html": eco,
         "research/register.html": register,
         "research/districts/index.html": dist_index,
