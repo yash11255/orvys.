@@ -271,6 +271,7 @@ def build_hub():
         ("/research/ecosystem.html", "blog/shg-1.jpg", "04 · Field Ecosystem", "CSR Ecosystem Directory", "Verified NGOs, corporate foundations, PSUs, and platforms active across Bihar."),
         ("/research/tracker.html", "blog/bridge-1.jpg", "05 · Active Projects", "Initiatives Tracker", "Interactive directory of all active CSR projects in Bihar, filterable by sector and geography."),
         ("/research/register.html", "blog/classroom-1.jpg", "06 · Implementer Registry", "Register an Initiative", "Submit your NGO or district-level programme to join the verified Bihar CSR directory."),
+        ("/research/sports.html", "sports/moin-ul-haq.jpg", "07 · Sports &amp; Youth", "Sports &amp; Youth", "Bihar's sports infrastructure push, CSR rules for sport, and what ministers have said."),
     ]
 
     cards_html = ""
