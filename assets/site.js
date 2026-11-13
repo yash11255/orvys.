@@ -115,4 +115,7 @@
       d.addEventListener('click', function () { show(i); });
     });
   });
+
+  // Print buttons (no inline handlers: the CSP blocks them)
+  document.querySelectorAll('[data-print]').forEach(function (b) { b.addEventListener('click', function () { window.print(); }); });
 })();
