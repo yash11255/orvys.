@@ -7,20 +7,21 @@ ogimage: /assets/img/ganga.jpg
 -->
 
 <article>
-<header class="post-head">
-  <div class="wrap narrow">
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/research/index.html">Research</a> / <span>Register Initiative</span></nav>
-    <span class="chip">Ecosystem Registry</span>
-    <h1>Register your NGO or District Initiative</h1>
-    <p class="lede">Submit your organisation or district-level programme for inclusion in the Bihar CSR Ecosystem Tracker.</p>
-    <div class="byline">Orvys Research · Free directory for verified CSR implementers</div>
-    <button type="button" class="btn btn-navy print-btn btn-dl-wm" onclick="window.print()" style="margin-top:16px"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:6px" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Print Questionnaire (PDF)</button>
+<section class="hero page-hero">
+  <div class="bg" style="background-image:url('/assets/img/blog/shg-1.jpg')"></div>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb" style="color:rgba(255,255,255,0.7);margin-bottom:18px"><a href="/" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Home</a> / <a href="/research/index.html" style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.3)">Research</a> / <span>Register Initiative</span></nav>
+    <span class="eyebrow" style="color:var(--gold2)">Orvys Research · Ecosystem Registry</span>
+    <h1 style="margin-top:20px">Register your NGO or <em>district initiative</em></h1>
+    <p>Get your organisation or district programme listed in the Bihar CSR Ecosystem Tracker, the directory CSR teams and PSUs use to find credible partners. Free for verified implementers.</p>
+    <div class="ctas"><a href="#register-form" class="btn btn-gold">Start registration</a><button type="button" class="btn btn-ghost print-btn btn-dl-wm" data-print>Print questionnaire</button></div>
   </div>
-</header>
+  <span class="credit">Women's self-help group meeting. Photo: Wikimedia Commons (illustrative).</span>
+</section>
 
-<div class="wrap" style="margin-top:60px;margin-bottom:80px">
+<div class="wrap" style="margin-top:80px;margin-bottom:96px">
   <div class="split" style="align-items:start">
-    <div class="rv">
+    <div class="rv reg-aside">
       <span class="chip">Why Register</span>
       <h2 style="margin:20px 0 20px">Join the verified Bihar CSR ecosystem</h2>
       <p class="lede">The Orvys Ecosystem Tracker is used by corporate CSR committees, PSUs, and state authorities looking for credible, execution-ready partners across Bihar's 38 districts.</p>
@@ -44,7 +45,7 @@ ogimage: /assets/img/ganga.jpg
       </div>
     </div>
 
-    <div class="formcard rv" style="color:var(--ink)">
+    <div class="formcard rv" id="register-form" style="color:var(--ink);scroll-margin-top:110px">
       <h3 style="margin-bottom:8px">Initiative Registration Form</h3>
       <p style="color:var(--mute);font-size:14.5px;margin-bottom:28px">Complete this form. We verify all entries before publishing them to the public tracker.</p>
       
@@ -53,7 +54,7 @@ ogimage: /assets/img/ganga.jpg
 
         <div class="full">
           <label for="reg-org">Organisation name *</label>
-          <input id="reg-org" name="organisation" required placeholder="e.g. Gram Vikas Kendra / Pratham Bihar">
+          <input id="reg-org" name="organisation" required placeholder="Registered name of your organisation">
         </div>
 
         <div>
@@ -98,7 +99,8 @@ ogimage: /assets/img/ganga.jpg
 
         <div class="full">
           <label for="reg-districts">Districts of operation in Bihar *</label>
-          <input id="reg-districts" name="districts" required placeholder="e.g. Patna, Muzaffarpur, Gaya (or Statewide)">
+          <input id="reg-districts" name="districts" required placeholder="e.g. Patna, Muzaffarpur, Gaya (or Statewide)" list="reg-district-list" autocomplete="off">
+          <datalist id="reg-district-list"><option value="Statewide (all districts)"><option value="Araria"><option value="Arwal"><option value="Aurangabad"><option value="Banka"><option value="Begusarai"><option value="Bhagalpur"><option value="Bhojpur"><option value="Buxar"><option value="Darbhanga"><option value="Gaya"><option value="Gopalganj"><option value="Jamui"><option value="Jehanabad"><option value="Kaimur"><option value="Katihar"><option value="Khagaria"><option value="Kishanganj"><option value="Lakhisarai"><option value="Madhepura"><option value="Madhubani"><option value="Munger"><option value="Muzaffarpur"><option value="Nalanda"><option value="Nawada"><option value="Pashchim Champaran"><option value="Patna"><option value="Purbi Champaran"><option value="Purnia"><option value="Rohtas"><option value="Saharsa"><option value="Samastipur"><option value="Saran"><option value="Sheikhpura"><option value="Sheohar"><option value="Sitamarhi"><option value="Siwan"><option value="Supaul"><option value="Vaishali"></datalist>
         </div>
 
         <div class="full">
@@ -140,6 +142,7 @@ ogimage: /assets/img/ganga.jpg
         </div>
 
         <div class="full">
+          <div class="chk" style="margin-bottom:16px"><input type="checkbox" id="reg-ok" name="consent" value="yes" required><label for="reg-ok" style="font-weight:400;color:var(--mute);margin:0">I confirm these details are accurate and agree to Orvys storing them to verify and list my organisation, as per the <a href="/privacy-policy.html" class="link" style="font-size:inherit">Privacy Policy</a>. *</label></div>
           <button type="submit" class="btn btn-gold" style="width:100%">Submit for Verification</button>
         </div>
         <div class="form-msg" role="status"></div>
