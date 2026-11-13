@@ -893,3 +893,6 @@ h1 em,h2 em,.hero h1 em{font-style:normal;color:var(--gold2)}
 .news-src a{color:var(--navy);border-bottom:1px solid var(--gold);font-weight:600}
 .news-credit{position:absolute;left:18px;bottom:10px;font-size:10px;color:#9aa3ae}
 @media(max-width:640px){.news{grid-template-columns:88px 1fr;gap:12px}.news-photo{width:88px;height:104px}}
+
+/* register page: keep the benefits column in view while the long form scrolls */
+@media(min-width:1001px){.reg-aside{position:sticky;top:110px}}
