@@ -23,12 +23,12 @@ for pdf in sorted((ROOT / "research" / "pdf").rglob("*.pdf")):
     for page in reader.pages:
         w.add_page(page)
     for page in w.pages:
-        for img in page.images:              # shrink embedded photos: max 1100 px, JPEG q65
+        for img in page.images:              # shrink embedded photos: max 800 px, JPEG q55
             try:
                 im = img.image
-                if im.width > 1100:
-                    im = im.resize((1100, round(im.height * 1100 / im.width)))
-                img.replace(im.convert("RGB"), quality=65)
+                if im.width > 800:
+                    im = im.resize((800, round(im.height * 800 / im.width)))
+                img.replace(im.convert("RGB"), quality=55)
             except Exception:
                 pass
         page.compress_content_streams()
