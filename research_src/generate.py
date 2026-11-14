@@ -68,7 +68,7 @@ def print_outlook_header(title, subtitle, pills, series="BIHAR CSR OUTLOOK 2026�
   </div>
   <div class="poh-titlebox">
     <span class="poh-eyebrow">{esc(eyebrow)}</span>
-    <h1 class="poh-title">{esc(title)}</h1>
+    <p class="poh-title" role="heading" aria-level="1">{esc(title)}</p>
     <p class="poh-sub">{esc(subtitle)}</p>
     <div class="poh-pills">
       {pill_spans}
@@ -77,7 +77,7 @@ def print_outlook_header(title, subtitle, pills, series="BIHAR CSR OUTLOOK 2026�
 </div>
 """
 
-def print_advisory_box(title="Orvys Strategic Advisory &amp; Field Delivery", subtitle="partner@orvys.in · www.orvys.in", body="Orvys designs, funds and measures CSR programmes across all 38 Bihar districts with vetted local partners, baseline surveys, Schedule VII compliance, and third-party outcome measurement. Patna · New Delhi."):
+def print_advisory_box(title="Orvys Strategic Advisory & Field Delivery", subtitle="partner@orvys.in · www.orvys.in", body="Orvys designs, funds and measures CSR programmes across all 38 Bihar districts with vetted local partners, baseline surveys, Schedule VII compliance, and third-party outcome measurement. Patna · New Delhi."):
     return f"""
 <div class="print-advisory-box">
   <div class="pab-head">
@@ -643,7 +643,7 @@ def build_skilling():
 {orvys_cta("Build an employment-linked skilling programme.", "Orvys structures industry-aligned vocational training in district ITIs with verified employer placements.")}
 """
     return wrap_page(content,
-        title="CSR Skilling &amp; Education in Bihar | Orvys Research",
+        title="CSR Skilling & Education in Bihar | Orvys Research",
         desc="Verified skilling and education CSR initiatives in Bihar: IBM, Pratham, Piramal Foundation, STAIRS and others, with Orvys assessment.",
         path="research/skilling.html", head="")
 
@@ -810,7 +810,7 @@ def build_ecosystem():
 {orvys_cta("Need an audited implementing partner?", "Orvys conducts rigorous due diligence and matches companies with the right NGO partner for every district in Bihar.")}
 """
     return wrap_page(content,
-        title="Bihar CSR Ecosystem Directory: NGOs, PSUs &amp; Foundations | Orvys",
+        title="Bihar CSR Ecosystem Directory: NGOs, PSUs & Foundations | Orvys",
         desc="Verified directory of NGOs, foundations, PSUs and platforms active in Bihar CSR — updated November 2026.",
         path="research/ecosystem.html", head="")
 
@@ -1163,7 +1163,7 @@ def build_district(d):
 {orvys_cta(f"Invest in {name}.", f"Orvys designs and deploys targeted CSR programmes in {name} with vetted local partners, baseline surveys, and third-party outcome measurement.")}
 """
     return wrap_page(content,
-        title=f"{name} District CSR Data &amp; Opportunities | Orvys Research",
+        title=f"{name} CSR Data & Opportunities | Orvys",
         desc=f"CSR spend data, development context and investment opportunities for {name} district, Bihar. FY24 spend: ₹{d['fy24']:.2f} Cr.",
         path=f"research/districts/{d['slug']}.html",
         head="",

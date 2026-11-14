@@ -132,7 +132,8 @@ def fmt(d):
     return datetime.date.fromisoformat(d).strftime("%-d %B %Y")
 
 def card(p):
-    return (f'<a class="post-card" href="/blog/{p["slug"]}.html"><div class="img"><img src="/assets/img/{p["image"]}" alt="" loading="lazy"></div>'
+    img_alt = html.escape(p.get("alt", p["title"]))
+    return (f'<a class="post-card" href="/blog/{p["slug"]}.html"><div class="img"><img src="/assets/img/{p["image"]}" alt="{img_alt}" loading="lazy"></div>'
             f'<span class="k">{p["category"]}</span><h3>{p["title"]}</h3><p>{p["desc"]}</p>'
             f'<span class="meta">{fmt(p["date"])} · {p["read"]} min read</span></a>')
 
